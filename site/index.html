@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>부산대 입시·진학 통계</title>
+<meta name="description" content="전국 대학 진학률 추이와 부산대학교 수시·정시 입시 커트라인을 출처·신뢰등급과 함께 정리한 대시보드">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23154a8a'/><path d='M7 22l6-7 5 4 7-9' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<style>
+:root{
+  --bg:#f6f7f9; --panel:#ffffff; --ink:#16202c; --muted:#5b6675; --line:#e2e6ec; --grid:#eef1f5;
+  --accent:#154a8a; --s1:#154a8a; --s2:#c2571a; --s3:#2d8a5f; --hi:#b3261e;
+  --tA:#2d8a5f; --tB:#b07a0c; --tC:#8a8f98;
+  --f-med:#154a8a; --f-eng:#2d8a5f; --f-hum:#c2571a; --f-edu:#7a4fb5; --f-art:#b3407a;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f141a; --panel:#171d25; --ink:#e7ebf0; --muted:#9aa5b3; --line:#2a323d; --grid:#212833;
+    --accent:#7fb0ef; --s1:#7fb0ef; --s2:#f0955a; --s3:#5fc493; --hi:#ff8a80;
+    --tA:#5fc493; --tB:#e2b04a; --tC:#9aa0a8;
+    --f-med:#7fb0ef; --f-eng:#5fc493; --f-hum:#f0955a; --f-edu:#b592e8; --f-art:#e07fae;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f141a; --panel:#171d25; --ink:#e7ebf0; --muted:#9aa5b3; --line:#2a323d; --grid:#212833;
+  --accent:#7fb0ef; --s1:#7fb0ef; --s2:#f0955a; --s3:#5fc493; --hi:#ff8a80;
+  --tA:#5fc493; --tB:#e2b04a; --tC:#9aa0a8;
+  --f-med:#7fb0ef; --f-eng:#5fc493; --f-hum:#f0955a; --f-edu:#b592e8; --f-art:#e07fae;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 "Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 16px 64px}
+header h1{font-size:clamp(22px,4vw,30px);margin:0 0 6px;letter-spacing:-.02em}
+header p{margin:0;color:var(--muted)}
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+button.theme{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit;font-size:13px}
+.notice{margin:18px 0 22px;padding:12px 14px;border-left:3px solid var(--tB);background:var(--panel);border-radius:6px;font-size:14px;color:var(--muted)}
+.notice b{color:var(--ink)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:22px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.tile .k{font-size:12.5px;color:var(--muted)}
+.tile .v{font-size:26px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.tile .s{font-size:12.5px;color:var(--muted)}
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 18px 14px;margin-bottom:18px}
+section.card h2{font-size:17px;margin:0 0 2px}
+section.card .sub{font-size:13px;color:var(--muted);margin:0 0 12px}
+.controls{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
+.chip{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:3px 11px;font:inherit;font-size:13px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+svg{display:block;width:100%;height:auto;overflow:visible}
+svg text{fill:var(--muted);font-size:11.5px;font-family:inherit}
+svg .lbl{fill:var(--ink);font-size:12px}
+svg .val{fill:var(--ink);font-size:11.5px;font-variant-numeric:tabular-nums}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+table{width:100%;min-width:680px;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:12.5px}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl{overflow-x:auto}
+.tier{display:inline-block;font-size:11px;font-weight:700;border-radius:4px;padding:0 5px;color:var(--panel)}
+.tier.A{background:var(--tA)} .tier.B{background:var(--tB)} .tier.C{background:var(--tC)}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12.5px;padding:7px 9px;border-radius:6px;max-width:280px;opacity:0;transition:opacity .1s;z-index:10;line-height:1.45}
+.src a{color:var(--accent);text-decoration:none}
+.src a:hover{text-decoration:underline}
+footer{color:var(--muted);font-size:12.5px;margin-top:26px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <div>
+      <h1>부산대 입시·진학 통계</h1>
+      <p>전국 대학 진학률 추이와 부산대학교 수시·정시 커트라인 · 2026년 10월 정리</p>
+    </div>
+    <button class="theme" id="themeBtn" type="button">테마 전환</button>
+  </header>
+
+  <div class="notice">
+    <b>이 자료는 2차 집계입니다.</b> 모든 수치에 출처와 신뢰등급을 붙였습니다.
+    <span class="tier A">A</span> 정부·공공 발표 또는 그 인용 보도,
+    <span class="tier B">B</span> 입시기관 집계,
+    <span class="tier C">C</span> 개인 블로그 집계(참고용).
+    지원 판단은 반드시 <a href="https://go.pusan.ac.kr" style="color:var(--accent)">부산대 입학처</a> 공식 입시결과와 대학어디가 자료로 확인하세요.
+  </div>
+
+  <div class="tiles" id="tiles"></div>
+
+  <section class="card">
+    <h2>① 전국 고교 졸업자 대학 진학률</h2>
+    <p class="sub">당해 고교 졸업자 중 상급학교 진학자 비율(재수생 제외). 발표 기관마다 집계 기준이 달라 계열을 나눠 표시합니다.</p>
+    <div id="natChart"></div>
+    <div class="legend" id="natLegend"></div>
+  </section>
+
+  <div class="two">
+    <section class="card">
+      <h2>② 부산대 모집 경쟁률</h2>
+      <p class="sub">원서접수 마감 기준, 대 1</p>
+      <div id="ratioChart"></div>
+      <div class="legend"><span><i style="background:var(--s1)"></i>2025학년도</span><span><i style="background:var(--s2)"></i>2026학년도</span></div>
+    </section>
+    <section class="card">
+      <h2>③ 부산 일반고 4년제 진학률</h2>
+      <p class="sub">부산 일반고 평균(졸업자 20명 미만 학교 제외, 국내·국외 포함)</p>
+      <div id="busanChart"></div>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>④ 수시 학생부교과 70% 컷 (내신 등급)</h2>
+    <p class="sub">최종등록자 상위 70% 지점의 내신 등급. 막대가 짧을수록 높은 성적입니다.</p>
+    <div class="controls" id="susiYear"></div>
+    <div id="susiChart"></div>
+    <div class="legend" id="fieldLegend1"></div>
+  </section>
+
+  <section class="card">
+    <h2>⑤ 2025학년도 정시 백분위 70% 컷</h2>
+    <p class="sub">최종등록자 국어·수학·탐구 백분위 평균의 70% 지점. 막대가 길수록 높은 성적입니다.</p>
+    <div id="jungsiChart"></div>
+    <div class="legend" id="fieldLegend2"></div>
+  </section>
+
+  <section class="card">
+    <h2>전체 데이터와 출처</h2>
+    <p class="sub">값이 엇갈리는 항목은 '다른 값'에 함께 적었습니다.</p>
+    <div class="controls" id="tierFilter"></div>
+    <div class="tbl"><table id="allTable"></table></div>
+  </section>
+
+  <footer>
+    데이터는 <code>site/data.js</code> 한 파일에 있습니다. 공식 원자료가 확보되면 해당 항목만 교체하세요.
+  </footer>
+</div>
+<div id="tip" role="tooltip"></div>
+
+<script src="data.js"></script>
+<script>
+(function(){
+  const S = window.SOURCES;
+  const $ = s => document.querySelector(s);
+  const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const FIELD = { "의약":"--f-med", "공학":"--f-eng", "인문·사회":"--f-hum", "사범":"--f-edu", "예체능":"--f-art" };
+
+  // 테마 전환
+  const root = document.documentElement;
+  try { const t = localStorage.getItem("theme"); if (t) root.dataset.theme = t; } catch(e){}
+  $("#themeBtn").onclick = () => {
+    const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.dataset.theme = dark ? "light" : "dark";
+    try { localStorage.setItem("theme", root.dataset.theme); } catch(e){}
+    renderAll();
+  };
+
+  // 툴팁
+  const tip = $("#tip");
+  function bindTip(node, html){
+    node.addEventListener("mousemove", e => { tip.innerHTML = html; tip.style.opacity = 1;
+      const x = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8); tip.style.left = x + "px"; tip.style.top = (e.clientY + 14) + "px"; });
+    node.addEventListener("mouseleave", () => tip.style.opacity = 0);
+    node.style.cursor = "default";
+  }
+  const srcLine = k => `<br><span style="opacity:.75">출처 ${S[k].tier} · ${esc(S[k].name)}</span>`;
+
+  // 요약 타일
+  function renderTiles(){
+    const nat = window.NATIONAL_RATE.flatMap(s => s.points).sort((a,b) => b.y - a.y)[0];
+    const s26 = window.PNU_RATIO.find(r => r.year === 2026 && r.kind === "수시");
+    const j26 = window.PNU_RATIO.find(r => r.year === 2026 && r.kind === "정시");
+    const med = window.SUSI_CUT.find(r => r.year === 2026 && r.track === "교과" && r.dept === "의예과");
+    $("#tiles").innerHTML = [
+      ["전국 대학 진학률", nat.v.toFixed(1) + "%", nat.y + "년 · 2008년 정점 83.8%"],
+      ["부산대 수시 경쟁률", s26.ratio.toFixed(2) + " : 1", "2026학년도 · " + s26.apply.toLocaleString() + "명 지원"],
+      ["부산대 정시 경쟁률", j26.ratio.toFixed(2) + " : 1", "2026학년도 · 3년 연속 상승"],
+      ["의예과 교과 70% 컷", med.cut.toFixed(2) + "등급", "2026학년도 학생부교과"],
+    ].map(([k,v,s]) => `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`).join("");
+  }
+
+  // ① 진학률 꺾은선
+  function renderNational(){
+    const box = $("#natChart"); box.innerHTML = "";
+    const W = Math.max(320, box.clientWidth), H = W < 600 ? 240 : 300, m = {l:40, r:16, t:14, b:28};
+    const x0 = 2007, x1 = 2025, y0 = 65, y1 = 86;
+    const X = y => m.l + (y - x0) / (x1 - x0) * (W - m.l - m.r);
+    const Y = v => m.t + (1 - (v - y0) / (y1 - y0)) * (H - m.t - m.b);
+    const svg = el("svg", {viewBox:`0 0 ${W} ${H}`, role:"img", "aria-label":"전국 대학 진학률 연도별 추이"}, box);
+    for (let v = 65; v <= 85; v += 5){
+      el("line", {x1:m.l, x2:W-m.r, y1:Y(v), y2:Y(v), stroke:css("--grid")}, svg);
+      el("text", {x:m.l-6, y:Y(v)+4, "text-anchor":"end"}, svg).textContent = v + "%";
+    }
+    for (let y = 2008; y <= 2024; y += (W < 600 ? 4 : 2)) el("text", {x:X(y), y:H-8, "text-anchor":"middle"}, svg).textContent = y;
+    const colors = ["--s1","--s2","--s3"];
+    window.NATIONAL_RATE.forEach((s, i) => {
+      const c = css(colors[i]);
+      // 연속된 해만 선으로 잇고, 공백 연도는 점선으로 표시
+      const p = s.points;
+      for (let k = 1; k < p.length; k++){
+        const gap = p[k].y - p[k-1].y > 1;
+        el("line", {x1:X(p[k-1].y), y1:Y(p[k-1].v), x2:X(p[k].y), y2:Y(p[k].v), stroke:c, "stroke-width":2.2, "stroke-dasharray": gap ? "4 4" : "none"}, svg);
+      }
+      p.forEach(pt => {
+        const g = el("g", {}, svg);
+        el("circle", {cx:X(pt.y), cy:Y(pt.v), r:4, fill:css("--panel"), stroke:c, "stroke-width":2}, g);
+        el("circle", {cx:X(pt.y), cy:Y(pt.v), r:12, fill:"transparent"}, g);
+        bindTip(g, `<b>${pt.y}년 ${pt.v.toFixed(1)}%</b> · ${esc(s.series)}${pt.note ? "<br>" + esc(pt.note) : ""}${srcLine(pt.src)}`);
+      });
+      const last = p[p.length-1];
+      if (i === 2 || i === 0) el("text", {x:X(last.y)+7, y:Y(last.v)-7, class:"val"}, svg).textContent = last.v.toFixed(1);
+    });
+    const peak = window.NATIONAL_RATE[0].points[0];
+    el("text", {x:X(peak.y)+8, y:Y(peak.v)+4, class:"val"}, svg).textContent = "83.8% 정점";
+    $("#natLegend").innerHTML = window.NATIONAL_RATE.map((s,i) => `<span><i style="background:var(${colors[i]})"></i>${esc(s.series)}</span>`).join("") + `<span>점선 = 중간 연도 자료 없음</span>`;
+  }
+
+  // 가로 막대 공용
+  function hbars(box, rows, opt){
+    box.innerHTML = "";
+    const W = Math.max(300, box.clientWidth), narrow = W < 520;
+    const rowH = 28, labelW = narrow ? Math.min(opt.labelW || 210, 150) : (opt.labelW || 210), m = {r:48, t:4, b:22};
+    const H = m.t + rows.length * rowH + m.b;
+    const svg = el("svg", {viewBox:`0 0 ${W} ${H}`, role:"img", "aria-label":opt.aria}, box);
+    const X = v => labelW + (v - opt.min) / (opt.max - opt.min) * (W - labelW - m.r);
+    opt.ticks.forEach(t => {
+      el("line", {x1:X(t), x2:X(t), y1:m.t, y2:H-m.b, stroke:css("--grid")}, svg);
+      el("text", {x:X(t), y:H-6, "text-anchor":"middle"}, svg).textContent = t + (opt.unit || "");
+    });
+    rows.forEach((r, i) => {
+      const y = m.t + i * rowH;
+      const g = el("g", {}, svg);
+      el("rect", {x:0, y, width:W, height:rowH, fill:"transparent"}, g);
+      el("text", {x:labelW-10, y:y+rowH/2+4, "text-anchor":"end", class:"lbl"}, g).textContent = narrow && r.label.length > 11 ? r.label.replace(/\(.*?\)/, "").slice(0, 11) : r.label;
+      el("rect", {x:X(opt.min), y:y+6, width:Math.max(2, X(r.v) - X(opt.min)), height:rowH-12, rx:3, fill:r.color, opacity: r.tier === "C" ? .55 : 1}, g);
+      el("text", {x:X(r.v)+6, y:y+rowH/2+4, class:"val"}, g).textContent = r.text;
+      bindTip(g, r.tip);
+    });
+  }
+
+  // ② 경쟁률
+  function renderRatio(){
+    const rows = [];
+    ["수시","정시"].forEach(kind => [2025, 2026].forEach(year => {
+      const r = window.PNU_RATIO.find(d => d.kind === kind && d.year === year);
+      rows.push({ label: `${kind} ${year}`, v: r.ratio, text: r.ratio.toFixed(2), tier: S[r.src].tier,
+        color: css(year === 2025 ? "--s1" : "--s2"),
+        tip: `<b>${year}학년도 ${kind} ${r.ratio.toFixed(2)} : 1</b>` + (r.quota ? `<br>모집 ${r.quota.toLocaleString()} · 지원 ${r.apply.toLocaleString()}` : "") + (r.detail ? "<br>" + r.detail : "") + (r.alt ? "<br>※ " + esc(r.alt) : "") + srcLine(r.src) });
+    }));
+    hbars($("#ratioChart"), rows, {min:0, max:12, ticks:[0,4,8,12], labelW:120, aria:"부산대 수시·정시 경쟁률"});
+  }
+
+  // ③ 부산 진학률
+  function renderBusan(){
+    const rows = window.BUSAN_RATE.map(r => ({ label: r.y + "년", v: r.v, text: r.v.toFixed(2) + "%", tier: S[r.src].tier, color: css("--s3"),
+      tip: `<b>${r.y}년 ${r.v.toFixed(2)}%</b>${r.note ? "<br>" + esc(r.note) : ""}${srcLine(r.src)}` }));
+    hbars($("#busanChart"), rows, {min:60, max:80, ticks:[60,70,80], unit:"%", labelW:120, aria:"부산 일반고 4년제 진학률"});
+    $("#busanChart").insertAdjacentHTML("beforeend", `<p class="sub" style="margin-top:8px">2024년 평균은 전년보다 1.18%p 낮아졌습니다. 전국 진학률(①)은 전문대를 포함한 수치라 직접 비교할 수 없습니다.</p>`);
+  }
+
+  // ④ 수시 교과 컷
+  let susiYear = 2026;
+  function renderSusiControls(){
+    $("#susiYear").innerHTML = [2026, 2025].map(y => `<button class="chip" type="button" aria-pressed="${y === susiYear}" data-y="${y}">${y}학년도</button>`).join("");
+    $("#susiYear").querySelectorAll("button").forEach(b => b.onclick = () => { susiYear = +b.dataset.y; renderSusiControls(); renderSusi(); });
+  }
+  function renderSusi(){
+    const rows = window.SUSI_CUT.filter(r => r.year === susiYear).sort((a,b) => a.cut - b.cut).map(r => ({
+      label: r.dept + (r.track === "지역인재" ? " · 지역인재" : ""), v: r.cut, text: r.cut.toFixed(2), tier: S[r.src].tier, color: css(FIELD[r.field]),
+      tip: `<b>${esc(r.dept)} ${r.cut.toFixed(2)}등급</b> · ${r.track}` + (r.avg ? `<br>평균 ${r.avg.toFixed(2)}` : "") + (r.ratio ? ` · 경쟁률 ${r.ratio} : 1` : "") + (r.alt ? "<br>다른 값 " + esc(r.alt) : "") + srcLine(r.src) }));
+    hbars($("#susiChart"), rows, {min:1, max:5, ticks:[1,2,3,4,5], unit:"등급", labelW:250, aria:"수시 학생부교과 70% 컷"});
+  }
+
+  // ⑤ 정시 백분위
+  function renderJungsi(){
+    const rows = window.JUNGSI_CUT.slice().sort((a,b) => b.cut - a.cut).map(r => ({
+      label: r.dept, v: r.cut, text: r.cut.toFixed(2), tier: S[r.src].tier, color: css(FIELD[r.field]),
+      tip: `<b>${esc(r.dept)} 백분위 ${r.cut.toFixed(2)}</b>` + (r.alt ? "<br>다른 값 " + esc(r.alt) : "") + srcLine(r.src) }));
+    hbars($("#jungsiChart"), rows, {min:70, max:100, ticks:[70,80,90,100], labelW:250, aria:"정시 백분위 70% 컷"});
+  }
+
+  function renderFieldLegend(){
+    const html = Object.entries(FIELD).map(([k,v]) => `<span><i style="background:var(${v})"></i>${k}</span>`).join("") + `<span>흐린 막대 = 신뢰등급 C</span>`;
+    $("#fieldLegend1").innerHTML = html; $("#fieldLegend2").innerHTML = html;
+  }
+
+  // 전체 표
+  let tierOn = new Set(["A","B","C"]);
+  function renderTierFilter(){
+    $("#tierFilter").innerHTML = ["A","B","C"].map(t => `<button class="chip" type="button" aria-pressed="${tierOn.has(t)}" data-t="${t}">등급 ${t}</button>`).join("");
+    $("#tierFilter").querySelectorAll("button").forEach(b => b.onclick = () => { const t = b.dataset.t; tierOn.has(t) ? tierOn.delete(t) : tierOn.add(t); renderTierFilter(); renderTable(); });
+  }
+  function renderTable(){
+    const rows = [];
+    window.NATIONAL_RATE.forEach(s => s.points.forEach(p => rows.push(["전국 진학률", `${p.y}년 (${s.series})`, p.v.toFixed(1) + "%", p.note || "", p.src])));
+    window.BUSAN_RATE.forEach(p => rows.push(["부산 일반고 4년제 진학률", p.y + "년", p.v.toFixed(2) + "%", p.note || "", p.src]));
+    window.PNU_RATIO.forEach(r => rows.push(["부산대 경쟁률", `${r.year} ${r.kind}`, r.ratio.toFixed(2) + " : 1", r.alt || r.detail || "", r.src]));
+    window.SUSI_CUT.forEach(r => rows.push(["수시 교과 70% 컷", `${r.year} ${r.dept} (${r.track})`, r.cut.toFixed(2) + "등급", r.alt || "", r.src]));
+    window.JUNGSI_CUT.forEach(r => rows.push(["정시 백분위 70% 컷", `2025 ${r.dept}`, r.cut.toFixed(2), r.alt || "", r.src]));
+    $("#allTable").innerHTML = `<thead><tr><th>구분</th><th>항목</th><th style="text-align:right">값</th><th>다른 값·비고</th><th>출처</th></tr></thead><tbody>` +
+      rows.filter(r => tierOn.has(S[r[4]].tier)).map(r => `<tr><td>${r[0]}</td><td>${esc(r[1])}</td><td class="n">${r[2]}</td><td>${esc(r[3])}</td><td class="src"><span class="tier ${S[r[4]].tier}">${S[r[4]].tier}</span> <a href="${S[r[4]].url}" target="_blank" rel="noopener">${esc(S[r[4]].name)}</a></td></tr>`).join("") + "</tbody>";
+  }
+
+  function renderAll(){ renderTiles(); renderNational(); renderRatio(); renderBusan(); renderSusi(); renderJungsi(); renderFieldLegend(); }
+  renderSusiControls(); renderTierFilter(); renderTable(); renderAll();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", renderAll);
+  let rt; let lastW = innerWidth;
+  addEventListener("resize", () => { if (innerWidth === lastW) return; lastW = innerWidth; clearTimeout(rt); rt = setTimeout(renderAll, 120); });
+})();
+</script>
+</body>
+</html>
